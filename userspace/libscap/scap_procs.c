@@ -175,6 +175,10 @@ int32_t scap_proc_fill_info_from_stats(char* procdirname, struct scap_threadinfo
 			{
 				tinfo->vtid = vtid;
 			}
+			else
+			{
+				tinfo->vtid = tinfo->tid;
+			}
 		}
 		else if(strstr(line, "NStgid:") == line)
 		{
@@ -182,6 +186,10 @@ int32_t scap_proc_fill_info_from_stats(char* procdirname, struct scap_threadinfo
 			if(sscanf(line, "NStgid: %*u %" PRIu64, &vpid) == 1)
 			{
 				tinfo->vpid = vpid;
+			}
+			else
+			{
+				tinfo->vpid = tinfo->pid;
 			}
 		}
 
