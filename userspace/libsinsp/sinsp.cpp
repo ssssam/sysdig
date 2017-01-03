@@ -676,13 +676,17 @@ void sinsp::on_new_entry_from_proc(void* context,
 	{
 		sinsp_threadinfo newti(this);
 		newti.init(tinfo);
-		newti.compute_program_hash();
-		auto sinsp_tinfo = find_thread(tid, true);
-		if(m_mode != SCAP_MODE_NODRIVER ||
-			sinsp_tinfo == nullptr ||
-			sinsp_tinfo->m_program_hash != newti.m_program_hash)
+		if(m_mode == SCAP_MODE_NODRIVER)
 		{
-			cerr << __FUNCTION__ << ":" << __LINE__ << "add thread=" << newti.m_tid << endl;
+			auto sinsp_tinfo = find_thread(tid, true);
+			if(sinsp_tinfo == nullptr || newti.m_clone_ts > sinsp_tinfo->m_clone_ts)
+			{
+				cerr << __FUNCTION__ << ":" << __LINE__ << "add thread=" << newti.m_tid << " comm=" << newti.m_comm << endl;
+				m_thread_manager->add_thread(newti, true);
+			}
+		}
+		else
+		{
 			m_thread_manager->add_thread(newti, true);
 		}
 	}

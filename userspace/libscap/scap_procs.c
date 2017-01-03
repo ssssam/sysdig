@@ -25,6 +25,7 @@ along with sysdig.  If not, see <http://www.gnu.org/licenses/>.
 #include <sys/resource.h>
 #include <sys/syscall.h>
 #include <sys/ioctl.h>
+#include <sys/stat.h>
 #endif
 
 #include "scap.h"
@@ -459,6 +460,7 @@ static int32_t scap_proc_add_from_proc(scap_t* handle, uint32_t tid, int parentt
 	size_t exe_len;
 	bool free_tinfo = false;
 	int32_t res = SCAP_SUCCESS;
+	struct stat dirstat;
 
 	snprintf(dir_name, sizeof(dir_name), "%s/%u/", procdirname, tid);
 	snprintf(filename, sizeof(filename), "%sexe", dir_name);
@@ -699,6 +701,11 @@ static int32_t scap_proc_add_from_proc(scap_t* handle, uint32_t tid, int parentt
 		snprintf(error, SCAP_LASTERR_SIZE, "can't fill root for %s", dir_name);
 		free(tinfo);
 		return SCAP_FAILURE;
+	}
+
+	if(stat(dir_name, &dirstat) == 0)
+	{
+		tinfo->clone_ts = dirstat.st_ctim.tv_sec*1000000000 + dirstat.st_ctim.tv_nsec;
 	}
 
 	//

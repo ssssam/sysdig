@@ -218,6 +218,8 @@ typedef struct scap_threadinfo
 	char root[SCAP_MAX_PATH_SIZE];
 	int filtered_out; ///< nonzero if this entry should not be saved to file
 	scap_fdinfo* fdlist; ///< The fd table for this process
+	uint64_t clone_ts;
+	
 	UT_hash_handle hh; ///< makes this structure hashable
 }scap_threadinfo;
 
