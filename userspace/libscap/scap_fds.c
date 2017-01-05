@@ -1373,6 +1373,7 @@ int32_t scap_fd_scan_fd_dir(scap_t *handle, char *procdir, scap_threadinfo *tinf
 	scap_fdinfo *fdi = NULL;
 	uint64_t net_ns;
 	ssize_t r;
+	uint16_t fd_added = 0;
 
 	snprintf(fd_dir_name, 1024, "%sfd", procdir);
 	dir_p = opendir(fd_dir_name);
@@ -1400,7 +1401,8 @@ int32_t scap_fd_scan_fd_dir(scap_t *handle, char *procdir, scap_threadinfo *tinf
 		sscanf(link_name, "net:[%"PRIi64"]", &net_ns);
 	}
 
-	while((dir_entry_p = readdir(dir_p)) != NULL)
+	while((dir_entry_p = readdir(dir_p)) != NULL &&
+		(handle->m_fd_lookup_limit == 0 || fd_added < handle->m_fd_lookup_limit))
 	{
 		fdi = NULL;
 		snprintf(f_name, 1024, "%s/%s", fd_dir_name, dir_entry_p->d_name);
@@ -1478,9 +1480,10 @@ int32_t scap_fd_scan_fd_dir(scap_t *handle, char *procdir, scap_threadinfo *tinf
 		if(SCAP_SUCCESS != res)
 		{
 			break;
+		} else {
+			++fd_added;
 		}
 	}
-
 	closedir(dir_p);
 	return res;
 }

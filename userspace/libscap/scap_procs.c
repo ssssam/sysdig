@@ -748,7 +748,7 @@ static int32_t scap_proc_add_from_proc(scap_t* handle, uint32_t tid, int parentt
 	//
 	// Only add fds for processes, not threads
 	//
-	if(handle->m_mode != SCAP_MODE_NODRIVER && parenttid == -1)
+	if(parenttid == -1)
 	{
 		res = scap_fd_scan_fd_dir(handle, dir_name, tinfo, sockets_by_ns, error);
 	}

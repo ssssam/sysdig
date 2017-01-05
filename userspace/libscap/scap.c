@@ -139,7 +139,7 @@ scap_t* scap_open_live_int(char *error,
 	handle->m_machine_info.reserved3 = 0;
 	handle->m_machine_info.reserved4 = 0;
 	handle->m_driver_procinfo = NULL;
-
+	handle->m_fd_lookup_limit = 0;
 	//
 	// Create the interface list
 	//
@@ -317,6 +317,7 @@ scap_t* scap_open_offline_int(const char* fname,
 	handle->m_last_evt_dump_flags = 0;
 	handle->m_driver_procinfo = NULL;
 	handle->refresh_proc_table_when_saving = true;
+	handle->m_fd_lookup_limit = 0;
 
 	handle->m_file_evt_buf = (char*)malloc(FILE_READ_BUF_SIZE);
 	if(!handle->m_file_evt_buf)
@@ -420,6 +421,7 @@ scap_t* scap_open_nodriver_int(char *error,
 	handle->m_machine_info.reserved3 = 0;
 	handle->m_machine_info.reserved4 = 0;
 	handle->m_driver_procinfo = NULL;
+	handle->m_fd_lookup_limit = 20; // fd lookup is limited here because is very expensive
 
 	//
 	// Create the interface list
