@@ -109,6 +109,7 @@ sinsp::sinsp() :
 	m_last_procrequest_tod = 0;
 	m_get_procs_cpu_from_driver = false;
 	m_is_tracers_capture_enabled = false;
+	m_file_start_offset = 0;
 
 	// Unless the cmd line arg "-pc" or "-pcontainer" is supplied this is false
 	m_print_container_data = false;
@@ -548,6 +549,14 @@ void sinsp::open(string filename)
 	oargs.proc_callback = NULL;
 	oargs.proc_callback_context = NULL;
 	oargs.import_users = m_import_users;
+	if(m_file_start_offset != 0)
+	{
+		oargs.start_offset = m_file_start_offset;
+	}
+	else
+	{
+		oargs.start_offset = 0;
+	}
 
 	m_h = scap_open(oargs, error);
 
@@ -926,6 +935,14 @@ int32_t sinsp::next(OUT sinsp_evt **puevt)
 				}
 	#endif
 			}
+			else if(res == SCAP_UNEXPECTED_BLOCK)
+			{
+				uint64_t filepos = scap_ftell(m_h) - scap_get_unexpected_block_readsize(m_h);
+				m_file_start_offset = filepos;
+				close();
+				open(m_input_filename);
+				return SCAP_TIMEOUT;
+			}
 			else
 			{
 				m_lasterr = scap_getlasterr(m_h);
@@ -1107,7 +1124,6 @@ int32_t sinsp::next(OUT sinsp_evt **puevt)
 
 		if(m_write_cycling)
 		{
-			//res = scap_number_of_bytes_to_write(evt->m_pevt, evt->m_cpuid, &bytes_to_write);
 			switch(m_cycle_writer->consider(evt))
 			{
 				case cycle_writer::NEWFILE:

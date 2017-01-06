@@ -99,6 +99,20 @@ struct scap
 	struct ppm_proclist_info* m_driver_procinfo;
 	bool refresh_proc_table_when_saving;
 	uint32_t m_fd_lookup_limit;
+	uint64_t m_unexpected_block_readsize;
+};
+
+typedef enum ppm_dumper_type
+{
+	DT_FILE = 0,
+	DT_MEM = 0,
+}ppm_dumper_type;
+
+struct scap_dumper
+{
+	gzFile m_f;
+	ppm_dumper_type m_type;
+	uint64_t m_off;
 };
 
 struct scap_ns_socket_list
@@ -153,7 +167,7 @@ int32_t scap_fd_info_to_string(scap_fdinfo* fdi, OUT char* str, uint32_t strlen)
 // Calculate the length on disk of an fd entry's info
 uint32_t scap_fd_info_len(scap_fdinfo* fdi);
 // Write the given fd info to disk
-int32_t scap_fd_write_to_disk(scap_t* handle, scap_fdinfo* fdi, gzFile f);
+int32_t scap_fd_write_to_disk(scap_t* handle, scap_fdinfo* fdi, scap_dumper_t* dumper);
 // Populate the given fd by reading the info from disk
 uint32_t scap_fd_read_from_disk(scap_t* handle, OUT scap_fdinfo* fdi, OUT size_t* nbytes, gzFile f);
 // Parse the headers of a trace file and load the tables
