@@ -119,7 +119,6 @@ bool sinsp_container_manager::remove_inactive_containers()
 		{
 			if(containers_in_use.find(it->first) == containers_in_use.end())
 			{
-				cerr << __FUNCTION__ << ":" << __LINE__ << " remove container=" << it->first << endl;
 				m_containers.erase(it++);
 			}
 			else

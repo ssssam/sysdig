@@ -690,7 +690,6 @@ void sinsp::on_new_entry_from_proc(void* context,
 			auto sinsp_tinfo = find_thread(tid, true);
 			if(sinsp_tinfo == nullptr || newti.m_clone_ts > sinsp_tinfo->m_clone_ts)
 			{
-				cerr << __FUNCTION__ << ":" << __LINE__ << "add thread=" << newti.m_tid << " comm=" << newti.m_comm << endl;
 				m_thread_manager->add_thread(newti, true);
 			}
 		}
@@ -2101,7 +2100,6 @@ bool sinsp_thread_manager::remove_inactive_threads()
 					!scap_is_thread_alive(m_inspector->m_h, it->second.m_pid, it->first, it->second.m_comm.c_str()))
 					)
 			{
-				cerr << __FUNCTION__ << ":" << __LINE__ << "remove thread=" << it->second.m_tid << endl;
 				//
 				// Reset the cache
 				//
