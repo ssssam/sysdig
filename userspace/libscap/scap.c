@@ -304,7 +304,7 @@ scap_t* scap_open_offline_int(const char* fname,
 	//
 	// Preliminary initializations
 	//
-	handle->m_mode = SCAP_MODE_FILE;
+	handle->m_mode = SCAP_MODE_CAPTURE;
 	handle->m_proc_callback = proc_callback;
 	handle->m_proc_callback_context = proc_callback_context;
 	handle->m_devs = NULL;
@@ -487,7 +487,7 @@ scap_t* scap_open(scap_open_args args, char *error)
 {
 	switch(args.mode)
 	{
-	case SCAP_MODE_FILE:
+	case SCAP_MODE_CAPTURE:
 		return scap_open_offline_int(args.fname, error,
 									 args.proc_callback, args.proc_callback_context,
 									 args.import_users, args.start_offset);
@@ -859,7 +859,7 @@ int32_t scap_next(scap_t* handle, OUT scap_evt** pevent, OUT uint16_t* pcpuid)
 
 	switch(handle->m_mode)
 	{
-	case SCAP_MODE_FILE:
+	case SCAP_MODE_CAPTURE:
 		res = scap_next_offline(handle, pevent, pcpuid);
 		break;
 	case SCAP_MODE_LIVE:

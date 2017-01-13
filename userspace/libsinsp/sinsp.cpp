@@ -292,7 +292,7 @@ void sinsp::init()
 	// importing the thread table, so that thread table filtering will work with
 	// container filters
 	//
-	if(is_offline())
+	if(is_capture())
 	{
 		uint64_t off = scap_ftell(m_h);
 		scap_evt* pevent;
@@ -335,7 +335,7 @@ void sinsp::init()
 		}
 	}
 
-	if(is_offline() || m_filter_proc_table_when_saving == true)
+	if(is_capture() || m_filter_proc_table_when_saving == true)
 	{
 		import_thread_table();
 	}
@@ -542,9 +542,9 @@ void sinsp::open(string filename)
 	//
 	// Start the capture
 	//
-	m_mode = SCAP_MODE_FILE;
+	m_mode = SCAP_MODE_CAPTURE;
 	scap_open_args oargs;
-	oargs.mode = SCAP_MODE_FILE;
+	oargs.mode = SCAP_MODE_CAPTURE;
 	oargs.fname = filename.c_str();
 	oargs.proc_callback = NULL;
 	oargs.proc_callback_context = NULL;
@@ -685,7 +685,7 @@ void sinsp::on_new_entry_from_proc(void* context,
 	{
 		sinsp_threadinfo newti(this);
 		newti.init(tinfo);
-		if(m_mode == SCAP_MODE_NODRIVER)
+		if(is_nodriver())
 		{
 			auto sinsp_tinfo = find_thread(tid, true);
 			if(sinsp_tinfo == nullptr || newti.m_clone_ts > sinsp_tinfo->m_clone_ts)
@@ -789,7 +789,7 @@ void sinsp::import_ipv4_interface(const sinsp_ipv4_ifinfo& ifinfo)
 void sinsp::refresh_ifaddr_list()
 {
 #ifdef HAS_CAPTURE
-	if(!is_offline())
+	if(!is_capture())
 	{
 		ASSERT(m_network_interfaces);
 		scap_refresh_iflist(m_h);
@@ -1027,7 +1027,7 @@ int32_t sinsp::next(OUT sinsp_evt **puevt)
 	//
 	// Run the periodic connection and thread table cleanup
 	//
-	if(!is_offline())
+	if(!is_capture())
 	{
 		m_thread_manager->remove_inactive_threads();
 		m_container_manager.remove_inactive_containers();

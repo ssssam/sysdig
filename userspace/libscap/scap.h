@@ -234,7 +234,7 @@ typedef void (*proc_entry_callback)(void* context,
   \brief Arguments for scap_open
 */
 typedef enum {
-	SCAP_MODE_FILE,
+	SCAP_MODE_CAPTURE,
 	SCAP_MODE_LIVE,
 	SCAP_MODE_NODRIVER
 } scap_mode_t;

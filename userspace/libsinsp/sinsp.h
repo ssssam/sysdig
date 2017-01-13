@@ -577,9 +577,9 @@ public:
 	/*!
 	  \brief Returns true if the current capture is offline
 	*/
-	inline bool is_offline()
+	inline bool is_capture()
 	{
-		return m_mode == SCAP_MODE_FILE;
+		return m_mode == SCAP_MODE_CAPTURE;
 	}
 
 	/*!
@@ -588,6 +588,14 @@ public:
 	inline bool is_live()
 	{
 		return m_mode == SCAP_MODE_LIVE;
+	}
+
+	/*!
+	  \brief Returns true if the current capture is live
+	*/
+	inline bool is_nodriver()
+	{
+		return m_mode == SCAP_MODE_NODRIVER;
 	}
 
 	/*!
