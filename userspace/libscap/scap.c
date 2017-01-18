@@ -924,9 +924,9 @@ int32_t scap_stop_capture(scap_t* handle)
 	//
 	// Not supported for files
 	//
-	if(handle->m_file)
+	if(handle->m_mode != SCAP_MODE_LIVE)
 	{
-		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "cannot stop offline captures");
+		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "cannot stop not live captures");
 		ASSERT(false);
 		return SCAP_FAILURE;
 	}
@@ -962,9 +962,9 @@ int32_t scap_start_capture(scap_t* handle)
 	//
 	// Not supported for files
 	//
-	if(handle->m_file)
+	if(handle->m_mode != SCAP_MODE_LIVE)
 	{
-		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "cannot start offline captures");
+		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "cannot start capture on this scap mode");
 		ASSERT(false);
 		return SCAP_FAILURE;
 	}
@@ -992,9 +992,9 @@ static int32_t scap_set_dropping_mode(scap_t* handle, int request, uint32_t samp
 	//	
 	// Not supported for files
 	//
-	if(handle->m_file)
+	if(handle->m_mode != SCAP_MODE_LIVE)
 	{
-		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "dropping mode not supported on offline captures");
+		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "dropping mode not supported on this scap mode");
 		ASSERT(false);
 		return SCAP_FAILURE;
 	}
@@ -1019,9 +1019,9 @@ int32_t scap_enable_tracers_capture(scap_t* handle)
 	//	
 	// Not supported for files
 	//
-	if(handle->m_file)
+	if(handle->m_mode != SCAP_MODE_LIVE)
 	{
-		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "scap_set_inode_of_dev_null not supported on offline captures");
+		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "scap_set_inode_of_dev_null not supported on this scap mode");
 		ASSERT(false);
 		return SCAP_FAILURE;
 	}
@@ -1099,9 +1099,9 @@ int32_t scap_set_snaplen(scap_t* handle, uint32_t snaplen)
 	//
 	// Not supported on files
 	//
-	if(handle->m_file)
+	if(handle->m_mode != SCAP_MODE_LIVE)
 	{
-		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "setting snaplen not supported on offline captures");
+		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "setting snaplen not supported on this scap mode");
 		return SCAP_FAILURE;
 	}
 
@@ -1143,9 +1143,9 @@ int32_t scap_set_snaplen(scap_t* handle, uint32_t snaplen)
 
 int64_t scap_get_readfile_offset(scap_t* handle)
 {
-	if(handle->m_file == NULL)
+	if(handle->m_mode != SCAP_MODE_CAPTURE)
 	{
-		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "scap_get_readfile_offset only works on trace files");
+		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "scap_get_readfile_offset only works on captures");
 		return -1;
 	}
 
@@ -1157,9 +1157,9 @@ static int32_t scap_handle_eventmask(scap_t* handle, uint32_t op, uint32_t event
 	//
 	// Not supported on files
 	//
-	if(handle->m_file)
+	if(handle->m_mode != SCAP_MODE_LIVE)
 	{
-		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "manipulating eventmasks not supported on offline captures");
+		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "manipulating eventmasks not supported on this scap mode");
 		return SCAP_FAILURE;
 	}
 
@@ -1250,9 +1250,9 @@ int32_t scap_enable_dynamic_snaplen(scap_t* handle)
 	//
 	// Not supported on files
 	//
-	if(handle->m_file)
+	if(handle->m_mode != SCAP_MODE_LIVE)
 	{
-		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "setting snaplen not supported on offline captures");
+		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "setting snaplen not supported on this scap mode");
 		return SCAP_FAILURE;
 	}
 
@@ -1280,9 +1280,9 @@ int32_t scap_disable_dynamic_snaplen(scap_t* handle)
 	//
 	// Not supported on files
 	//
-	if(handle->m_file)
+	if(handle->m_mode != SCAP_MODE_LIVE)
 	{
-		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "setting snaplen not supported on offline captures");
+		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "setting snaplen not supported on this scap mode");
 		return SCAP_FAILURE;
 	}
 
@@ -1352,9 +1352,9 @@ struct ppm_proclist_info* scap_get_threadlist_from_driver(scap_t* handle)
 	//
 	// Not supported on files
 	//
-	if(handle->m_file)
+	if(handle->m_mode != SCAP_MODE_LIVE)
 	{
-		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "scap_get_threadlist_from_driver not supported on offline captures");
+		snprintf(handle->m_lasterr,	SCAP_LASTERR_SIZE, "scap_get_threadlist_from_driver not supported on this scap mode");
 		return NULL;
 	}
 
