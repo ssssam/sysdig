@@ -948,9 +948,23 @@ void sinsp_parser::parse_clone_exit(sinsp_evt *evt)
 		//
 		// clone() returns 0 in the child.
 		//
-
 		int64_t parenttid;
 
+		//
+		// Before embarking in parsing the event, check if there's already
+		// an entry in the thread table for this process. If there is one, make sure
+		// it was created recently. Otherwise, assume it's an old thread for which
+		// we lost the exit event and remove it from the table.
+		//
+		if(evt->m_tinfo && evt->m_tinfo->m_clone_ts != 0)
+		{
+			if(evt->get_ts() - evt->m_tinfo->m_clone_ts > CLONE_STALE_TIME_NS)
+			{
+				m_inspector->remove_thread(tid, true);
+				evt->m_tinfo = NULL;
+			}
+		}
+	
 		//
 		// Check if this is a process or a new thread
 		//
@@ -971,32 +985,6 @@ void sinsp_parser::parse_clone_exit(sinsp_evt *evt)
 			parinfo = evt->get_param(5);
 			ASSERT(parinfo->m_len == sizeof(int64_t));
 			parenttid = *(int64_t *)parinfo->m_val;
-		}
-
-		//
-		// If the threadinfo in the event exists, and we're in
-		// a container, the threadinfo in the event must be
-		// stale (e.g. from a prior process with the same
-		// tid), because only the child side of a clone
-		// creates the threadinfo for the child. Clear and
-		// remove the old threadinfo.
-		//
-		if(evt->m_tinfo && in_container)
-		{
-			// See if the parent thread is in a
-			// container. If it is, the parent thread
-			// did *not* create the thread for this child,
-			// and any existing thread state must be
-			// stale.
-
-			sinsp_threadinfo* ptinfo = m_inspector->get_thread(parenttid, false, true);
-
-
-			if(ptinfo && ptinfo->m_tid != ptinfo->m_vtid)
-			{
-				m_inspector->remove_thread(tid, true);
-				evt->m_tinfo = NULL;
-			}
 		}
 
 		// Validate that the child thread info has actually been created.
@@ -1585,7 +1573,13 @@ void sinsp_parser::parse_execve_exit(sinsp_evt *evt)
 		//
 		parinfo = evt->get_param(14);
 		evt->m_tinfo->set_cgroups(parinfo->m_val, parinfo->m_len);
-		if(evt->m_tinfo->m_container_id.empty())
+
+		//
+		// If the thread info has no container ID, or if the clone happened a long 
+		// time ago, recreate the container information.
+		//
+		if(evt->m_tinfo->m_container_id.empty() ||
+			(evt->get_ts() - evt->m_tinfo->m_clone_ts > CLONE_STALE_TIME_NS))
 		{
 			m_inspector->m_container_manager.resolve_container(evt->m_tinfo, m_inspector->is_live());
 		}
