@@ -841,8 +841,8 @@ static int32_t scap_next_nodriver(scap_t* handle, OUT scap_evt** pevent, OUT uin
 	static scap_evt evt;
 	evt.len = 0;
 	evt.tid = -1;
-	evt.type = PPME_GENERIC_E;
-
+	evt.type = PPME_SYSDIGEVENT_X;
+	
 	usleep(100000);
 
 	struct timeval tv;
